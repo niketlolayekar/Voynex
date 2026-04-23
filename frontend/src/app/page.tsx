@@ -82,11 +82,11 @@ export default function HomePage() {
                     className="group block rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     {/* Image placeholder with gradient */}
                     <div className="relative h-56 overflow-hidden">
-                      <div className={`absolute inset-0 ${
-                        idx === 0 ? 'bg-gradient-to-br from-blue-400 to-purple-600' :
-                        idx === 1 ? 'bg-gradient-to-br from-orange-400 to-pink-500' :
-                        'bg-gradient-to-br from-teal-400 to-emerald-600'
-                      }`} />
+                      <img
+  src={trip.images[0]}
+  alt={trip.title}
+  className="absolute inset-0 w-full h-full object-cover"
+/>
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                       <div className="absolute bottom-4 left-4">
                         <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-medium">
