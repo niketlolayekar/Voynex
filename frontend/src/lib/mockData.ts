@@ -111,7 +111,7 @@ export const mockTrips: Trip[] = [
   {
     _id: 't6', title: 'Andaman Tropical Escape', destination: 'Andaman Islands',
     description: 'Dive into crystal-clear waters, explore coral reefs, and relax on pristine white-sand beaches of the Andaman Islands.',
-    price: 22499, duration: 5, images: ['https://images.unsplash.com/photo-1589136777351-fdc9c606132e?w=800&q=80'],
+    price: 22499, duration: 5, images: ['https://images.unsplash.com/photo-1586359716568-3e1907e4cf9f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'],
     activityType: ['beach', 'water-sports', 'nature'],
     highlights: ['Radhanagar Beach', 'Scuba Diving', 'Cellular Jail', 'Ross Island'],
     itinerary: [
@@ -130,14 +130,101 @@ export const mockTrips: Trip[] = [
 ];
 
 export const mockProducts: Product[] = [
-  { _id: 'p1', name: 'Alpine Waterproof Jacket', description: 'Windproof and waterproof jacket for extreme conditions', price: 3499, category: 'jackets', images: ['/shop/jacket1.jpg'], stock: 45, rating: 4.5, reviewCount: 67 },
-  { _id: 'p2', name: 'Trek-Pro Hiking Backpack 60L', description: 'Ergonomic backpack with rain cover', price: 4299, category: 'bags', images: ['/shop/backpack.jpg'], stock: 30, rating: 4.8, reviewCount: 112 },
-  { _id: 'p3', name: 'Polarized Adventure Sunglasses', description: 'UV400 protection with anti-glare coating', price: 1299, category: 'accessories', images: ['/shop/sunglasses.jpg'], stock: 80, rating: 4.3, reviewCount: 45 },
-  { _id: 'p4', name: 'GoPro Hero 12 Black', description: '5.3K video, HyperSmooth stabilization', price: 44999, category: 'electronics', images: ['/shop/gopro.jpg'], stock: 15, rating: 4.9, reviewCount: 203 },
-  { _id: 'p5', name: 'Thermal Base Layer Set', description: 'Merino wool blend for extreme cold', price: 2199, category: 'gear', images: ['/shop/thermal.jpg'], stock: 60, rating: 4.6, reviewCount: 34 },
-  { _id: 'p6', name: 'Travel Neck Pillow Premium', description: 'Memory foam with cooling gel', price: 899, category: 'accessories', images: ['/shop/pillow.jpg'], stock: 100, rating: 4.4, reviewCount: 89 },
-  { _id: 'p7', name: 'Fleece-Lined Trekking Pants', description: 'Stretchable, water-resistant trekking pants', price: 1899, category: 'gear', images: ['/shop/pants.jpg'], stock: 55, rating: 4.5, reviewCount: 58 },
-  { _id: 'p8', name: 'Compact Travel First Aid Kit', description: 'Essential medical supplies for travelers', price: 699, category: 'accessories', images: ['/shop/firstaid.jpg'], stock: 200, rating: 4.7, reviewCount: 76 },
+  {
+    _id: 'p1',
+    name: 'Alpine Waterproof Jacket',
+    description: 'Windproof and waterproof jacket for extreme conditions',
+    price: 3499,
+    category: 'jackets',
+    images: ['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=1200&q=80'],
+    stock: 45,
+    rating: 4.5,
+    reviewCount: 67
+  },
+
+  {
+    _id: 'p2',
+    name: 'Trek-Pro Hiking Backpack 60L',
+    description: 'Ergonomic backpack with rain cover',
+    price: 4299,
+    category: 'bags',
+    images: ['https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1200&q=80'],
+    stock: 30,
+    rating: 4.8,
+    reviewCount: 112
+  },
+
+  {
+    _id: 'p3',
+    name: 'Polarized Adventure Sunglasses',
+    description: 'UV400 protection with anti-glare coating',
+    price: 1299,
+    category: 'accessories',
+    images: ['https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1200&q=80'],
+    stock: 80,
+    rating: 4.3,
+    reviewCount: 45
+  },
+
+  {
+    _id: 'p4',
+    name: 'GoPro Hero 12 Black',
+    description: '5.3K video, HyperSmooth stabilization',
+    price: 44999,
+    category: 'electronics',
+    images: ['https://x.imastudent.com/content/0051159_gopro-hero-12-black-action-camera_500.png'],
+    stock: 15,
+    rating: 4.9,
+    reviewCount: 203
+  },
+
+  {
+    _id: 'p5',
+    name: 'Thermal Base Layer Set',
+    description: 'Merino wool blend for extreme cold',
+    price: 2199,
+    category: 'gear',
+    images: ['https://media.istockphoto.com/id/1199887762/vector/basic-rgb.jpg?s=2048x2048&w=is&k=20&c=uU4EPl05qTSwddNE-3YoSIH_lnNjVc77Yvlsp47T7sY='],
+    stock: 60,
+    rating: 4.6,
+    reviewCount: 34
+  },
+
+  {
+    _id: 'p6',
+    name: 'Travel Neck Pillow Premium',
+    description: 'Memory foam with cooling gel',
+    price: 899,
+    category: 'accessories',
+    images: ['https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQAQ8Tm9A4XjXKToiYVLwQpGq8bwpRNjzXGNJ6zM9Z3QslP92gbuVvDQOEcxlWeXgb-LZhoFneI79qtLZWq48pExmrSmnoADq86kd5l8zkQh-CiSZERQV0zzpGJUFDhSA&usqp=CAc'],
+    stock: 100,
+    rating: 4.4,
+    reviewCount: 89
+  },
+
+  {
+    _id: 'p7',
+    name: 'Fleece-Lined Trekking Pants',
+    description: 'Stretchable, water-resistant trekking pants',
+    price: 1899,
+    category: 'gear',
+    images: ['https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=1200&q=80'],
+    stock: 55,
+    rating: 4.5,
+    reviewCount: 58
+  },
+
+  {
+    _id: 'p8',
+    name: 'Compact Travel First Aid Kit',
+    description: 'Essential medical supplies for travelers',
+    price: 699,
+    category: 'accessories',
+    images: ['https://www.bbassets.com/media/uploads/p/l/40323488_1-pearl-fiesta-first-aid-bag-mini-portable-medical-bag-for-outdoor-camping-hiking-travel-multifunction-emergency-medicine-storage.jpg'],
+    stock: 200,
+    rating: 4.7,
+    reviewCount: 76
+  }
 ];
 
 export const mockRentals: Rental[] = [
