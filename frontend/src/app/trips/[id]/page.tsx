@@ -42,7 +42,14 @@ export default function TripDetailPage() {
   return (
     <div className="min-h-screen pb-16">
       {/* Hero */}
-      <div className={`relative h-[40vh] bg-gradient-to-br ${GRADIENTS[gradIdx % GRADIENTS.length]}`}>
+      {/* <div className={`relative h-[40vh] bg-gradient-to-br ${GRADIENTS[gradIdx % GRADIENTS.length]}`}> */}
+      <div className="relative h-[40vh] overflow-hidden">
+  <img
+    src={trip.images[0]}
+    alt={trip.title}
+    className="w-full h-full object-cover"
+  />
+  <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-8 left-0 right-0 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-white">
           <div className="flex items-center gap-2 text-sm mb-2 opacity-90"><FiMapPin size={14} /> {trip.destination}</div>

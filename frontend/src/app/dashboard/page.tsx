@@ -52,7 +52,12 @@ function DashboardContent() {
               {mockBookings.map(booking => (
                 <div key={booking._id} className="rounded-2xl border border-border bg-card p-5 hover:shadow-md transition-all">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-primary to-teal flex-shrink-0" />
+                    {/* <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-primary to-teal flex-shrink-0" /> */}
+                    <img
+  src={booking.trip.images[0]}
+  alt={booking.trip.title}
+  className="h-20 w-20 rounded-xl object-cover flex-shrink-0"
+/>
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div>
@@ -80,7 +85,12 @@ function DashboardContent() {
               {mockTrips.slice(2, 5).map(trip => (
                 <Link key={trip._id} href={`/trips/${trip._id}`}
                   className="group p-4 rounded-2xl border border-border bg-card hover:shadow-md transition-all">
-                  <div className="h-32 rounded-xl bg-gradient-to-br from-teal to-emerald-600 mb-3" />
+                  {/* <div className="h-32 rounded-xl bg-gradient-to-br from-teal to-emerald-600 mb-3" /> */}
+                  <img
+  src={trip.images[0]}
+  alt={trip.title}
+  className="h-32 w-full rounded-xl object-cover mb-3"
+/>
                   <h3 className="font-medium group-hover:text-primary transition-colors">{trip.title}</h3>
                   <p className="text-sm text-muted mt-1">{trip.destination} · {trip.duration} days</p>
                   <p className="text-primary font-semibold mt-2">₹{trip.price.toLocaleString()}</p>
