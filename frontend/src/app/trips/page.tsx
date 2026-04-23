@@ -111,7 +111,12 @@ export default function TripsPage() {
               <Link href={`/trips/${trip._id}`}
                 className="group block rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div className="relative h-52 overflow-hidden">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${GRADIENTS[idx % GRADIENTS.length]}`} />
+                  {/* <div className={`absolute inset-0 bg-gradient-to-br ${GRADIENTS[idx % GRADIENTS.length]}`} /> */}
+                  <img
+  src={trip.images[0]}
+  alt={trip.title}
+  className="absolute inset-0 w-full h-full object-cover"
+/>
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                   <div className="absolute bottom-4 left-4 flex gap-2">
                     <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-medium">{trip.duration} Days</span>

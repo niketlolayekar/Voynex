@@ -54,8 +54,14 @@ export default function ShopPage() {
           {filtered.map((product, idx) => (
             <motion.div key={product._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
               className="group rounded-2xl border border-border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-              <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 relative overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-30">🎒</div>
+              {/* <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-30">🎒</div> */}
+                <div className="h-48 relative overflow-hidden">
+  <img
+    src={product.images[0]}
+    alt={product.name}
+    className="w-full h-full object-cover"
+  />
                 {product.stock < 20 && (
                   <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-orange text-white text-[10px] font-bold">Low Stock</span>
                 )}
