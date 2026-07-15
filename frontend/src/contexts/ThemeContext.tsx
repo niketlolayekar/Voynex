@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
@@ -9,22 +10,30 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
     const saved = localStorage.getItem('voynex_theme') as 'light' | 'dark' | null;
     if (saved) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
       setTheme(saved);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      setTheme('light');
     }
+    // Default is already dark — best for capstone demo
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    if (!mounted) return;
+    const root = document.documentElement;
+    
+    // Add transition class for smooth theme switch
+    root.style.setProperty('transition', 'background-color 0.4s ease, color 0.3s ease');
+    root.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('voynex_theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 

@@ -1,216 +1,305 @@
 'use client';
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiCpu, FiMapPin, FiDollarSign, FiClock, FiUsers, FiStar, FiCheck } from 'react-icons/fi';
-import { AITripPlan, GroupComposition } from '@/types';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TbWand, TbArrowRight, TbMapPin, TbCalendar, TbCoin, TbMoodSmile, TbCheck, TbInfoCircle, TbDownload, TbShare, TbChevronLeft } from 'react-icons/tb';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
-const INTERESTS = ['adventure', 'nature', 'beach', 'culture', 'photography', 'wellness', 'nightlife', 'food', 'shopping', 'wildlife'];
+const VIBES = ['Relaxing', 'Adventurous', 'Cultural', 'Party', 'Romantic', 'Family Friendly'];
+const LOADING_STEPS = [
+  "Analyzing destination options...",
+  "Finding hidden gems and local favorites...",
+  "Optimizing routes for minimal travel time...",
+  "Checking budget constraints...",
+  "Finalizing your personalized itinerary..."
+];
 
-function generateAIPlan(dest: string, budget: number, duration: number, group: GroupComposition, interests: string[]): AITripPlan {
-  const hasKids = group.children > 0;
-  const hasSeniors = group.seniors > 0;
-
-  const days = Array.from({ length: duration }, (_, i) => {
-    const activities: string[] = [];
-    if (hasKids) activities.push(i === 0 ? 'Visit kid-friendly park or zoo' : 'Interactive museum or water park');
-    if (hasSeniors) activities.push('Leisurely cultural walk with rest breaks');
-    if (interests.includes('adventure') && !hasSeniors) activities.push('Adventure activity (trekking/rafting)');
-    if (interests.includes('culture')) activities.push('Local temple or heritage site visit');
-    if (interests.includes('food')) activities.push('Local cuisine food tour');
-    if (interests.includes('photography')) activities.push('Scenic viewpoint for photography');
-    if (interests.includes('beach')) activities.push('Beach relaxation & water activities');
-    if (interests.includes('nature')) activities.push('Nature walk or garden visit');
-    if (activities.length === 0) activities.push('Explore local attractions', 'Free time for personal activities');
-
-    return {
-      day: i + 1,
-      title: i === 0 ? `Arrival in ${dest}` : i === duration - 1 ? 'Departure Day' : `Day ${i + 1} - ${interests[i % interests.length] || 'Exploration'}`,
-      description: i === 0 ? `Arrive and settle in. ${hasSeniors ? 'Take it easy with a comfortable check-in.' : 'Light exploration of nearby areas.'}` :
-        i === duration - 1 ? 'Last day shopping, packing, and departure.' :
-        `Full day of activities tailored for your group${hasKids ? ' with kid-friendly options' : ''}${hasSeniors ? ' and senior-accessible venues' : ''}.`,
-      activities: activities.slice(0, 4),
-    };
-  });
-
-  const tips: string[] = [
-    `Best time to visit ${dest}: October to March`,
-    budget < 15000 ? 'Stay in hostels or budget homestays to save money' : 'Consider boutique hotels for a premium experience',
-    hasKids ? 'Pack snacks, games, and a first-aid kit for children' : '',
-    hasSeniors ? 'Ensure accommodations have elevator access and are close to medical facilities' : '',
-    'Always carry a copy of your ID and travel insurance documents',
-    'Download offline maps before your trip',
-  ].filter(Boolean);
-
-  return {
-    destination: dest, duration, budget, groupComposition: group, interests,
-    itinerary: days, estimatedCost: budget * (group.adults + group.children * 0.7 + group.seniors * 0.9),
-    tips,
-    accommodationSuggestions: [
-      hasKids ? 'Family suites with connecting rooms' : hasSeniors ? 'Ground-floor accessible rooms' : 'Standard double rooms',
-      budget > 20000 ? 'Premium resorts with amenities' : 'Clean budget hotels with good reviews',
-    ],
-  };
-}
+type PlannerState = 'form' | 'loading' | 'results';
 
 export default function AIPlannerPage() {
+  const [state, setState] = useState<PlannerState>('form');
+  const [loadingStep, setLoadingStep] = useState(0);
+  
+  // Form State
   const [destination, setDestination] = useState('');
-  const [budget, setBudget] = useState(15000);
-  const [duration, setDuration] = useState(5);
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
-  const [seniors, setSeniors] = useState(0);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [plan, setPlan] = useState<AITripPlan | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [days, setDays] = useState('3');
+  const [budget, setBudget] = useState('Moderate');
+  const [vibe, setVibe] = useState('Adventurous');
 
-  const toggleInterest = (i: string) => setSelectedInterests(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
+  useEffect(() => {
+    if (state === 'loading') {
+      let step = 0;
+      const interval = setInterval(() => {
+        step += 1;
+        if (step < LOADING_STEPS.length) {
+          setLoadingStep(step);
+        } else {
+          clearInterval(interval);
+          setTimeout(() => setState('results'), 800);
+        }
+      }, 1200);
+      return () => clearInterval(interval);
+    }
+  }, [state]);
 
-  const generatePlan = async () => {
-    if (!destination) return;
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    const result = generateAIPlan(destination, budget, duration, { adults, children, seniors }, selectedInterests);
-    setPlan(result);
-    setLoading(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!destination.trim()) return;
+    setState('loading');
+    setLoadingStep(0);
   };
 
+  const handleReset = () => {
+    setState('form');
+    setDestination('');
+    setDays('3');
+    setBudget('Moderate');
+    setVibe('Adventurous');
+  };
+
+  const MOCK_ITINERARY = Array.from({ length: parseInt(days) || 3 }, (_, i) => ({
+    day: i + 1,
+    title: i === 0 ? 'Arrival & City Introduction' : i === 1 ? 'Adventure & Exploration' : 'Relaxation & Departure',
+    activities: [
+      {
+        time: '09:00 AM',
+        title: 'Boutique Hotel Check-in',
+        description: 'Drop your bags at this eco-friendly boutique stay.',
+        reasoning: `Chosen because it fits your '${vibe}' preference and is 15% below average ${budget} budget.`
+      },
+      {
+        time: '11:30 AM',
+        title: 'Local Guided Tour',
+        description: 'A 2-hour walking tour of the historic district.',
+        reasoning: 'Highly rated by similar travelers interested in authentic experiences.'
+      },
+      {
+        time: '02:00 PM',
+        title: 'Lunch at Seaside Cafe',
+        description: 'Fresh seafood with an ocean view.',
+        reasoning: 'Perfectly matches your vibe, with a verified 4.8 star rating.'
+      }
+    ]
+  }));
+
   return (
-    <div className="min-h-screen py-8">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <FiCpu size={14} /> Powered by AI
+    <div className="min-h-screen bg-background pb-24">
+      <Breadcrumbs />
+      
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header */}
+        <div className="mb-10 text-center">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4 shadow-inner">
+            <TbWand size={32} />
           </div>
-          <h1 className="text-4xl font-bold">AI Trip Planner</h1>
-          <p className="text-muted mt-2 max-w-xl mx-auto">Tell us about your dream trip and we&apos;ll create a personalized itinerary tailored for your group.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3">AI Trip Planner</h1>
+          <p className="text-muted max-w-xl mx-auto">Tell us what you want, and our AI will generate a personalized day-by-day itinerary in seconds.</p>
         </div>
 
-        {!plan ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto rounded-2xl border border-border bg-card p-8">
-            <div className="space-y-6">
-              <div>
-                <label className="text-sm font-medium mb-1.5 block flex items-center gap-1"><FiMapPin size={14} /> Destination</label>
-                <input value={destination} onChange={e => setDestination(e.target.value)} placeholder="e.g., Manali, Goa, Rajasthan"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+        <AnimatePresence mode="wait">
+          {/* FORM STATE */}
+          {state === 'form' && (
+            <motion.form 
+              key="form"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+              onSubmit={handleSubmit}
+              className="bg-card rounded-3xl border border-border p-6 sm:p-10 shadow-2xl"
+            >
+              <div className="space-y-8">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold mb-3"><TbMapPin className="text-accent" /> Destination</label>
+                  <input 
+                    type="text" 
+                    value={destination} 
+                    onChange={e => setDestination(e.target.value)} 
+                    placeholder="e.g. Bali, Paris, Tokyo or 'Anywhere'"
+                    required
+                    className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent tap-target" 
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-bold mb-3"><TbCalendar className="text-accent" /> How many days?</label>
+                    <select 
+                      value={days} 
+                      onChange={e => setDays(e.target.value)}
+                      className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent tap-target"
+                    >
+                      {[1,2,3,4,5,6,7,10,14].map(d => <option key={d} value={d}>{d} Days</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-bold mb-3"><TbCoin className="text-accent" /> Budget Level</label>
+                    <select 
+                      value={budget} 
+                      onChange={e => setBudget(e.target.value)}
+                      className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent tap-target"
+                    >
+                      {['Budget', 'Moderate', 'Luxury'].map(b => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold mb-3"><TbMoodSmile className="text-accent" /> Travel Vibe</label>
+                  <div className="flex flex-wrap gap-3">
+                    {VIBES.map(v => (
+                      <button 
+                        key={v} 
+                        type="button"
+                        onClick={() => setVibe(v)}
+                        className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all tap-target border ${
+                          vibe === v ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30' : 'bg-surface-hover border-border hover:border-muted text-foreground'
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-1.5 block flex items-center gap-1"><FiDollarSign size={14} /> Budget (₹/person)</label>
-                  <input type="number" value={budget} onChange={e => setBudget(+e.target.value)} min={5000} step={1000}
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1.5 block flex items-center gap-1"><FiClock size={14} /> Duration (days)</label>
-                  <input type="number" value={duration} onChange={e => setDuration(+e.target.value)} min={1} max={30}
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                </div>
+              <div className="mt-12">
+                <button 
+                  type="submit"
+                  disabled={!destination.trim()}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-teal text-white font-bold text-lg hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:transform-none tap-target flex items-center justify-center gap-2"
+                >
+                  Generate My Itinerary <TbWand size={20} />
+                </button>
+              </div>
+            </motion.form>
+          )}
+
+          {/* LOADING STATE */}
+          {state === 'loading' && (
+            <motion.div 
+              key="loading"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card rounded-3xl border border-border p-10 sm:p-16 shadow-2xl text-center"
+            >
+              <div className="relative h-24 w-24 mx-auto mb-8">
+                <div className="absolute inset-0 rounded-full border-4 border-surface-hover" />
+                <motion.div 
+                  className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary border-r-teal"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
+                <TbWand size={32} className="absolute inset-0 m-auto text-primary animate-pulse" />
+              </div>
+              
+              <h2 className="text-2xl font-bold mb-6">AI is thinking...</h2>
+              
+              <div className="h-6 overflow-hidden max-w-sm mx-auto relative">
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={loadingStep}
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-muted font-medium absolute inset-0 w-full"
+                  >
+                    {LOADING_STEPS[loadingStep]}
+                  </motion.p>
+                </AnimatePresence>
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-2 block flex items-center gap-1"><FiUsers size={14} /> Group Composition</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{ l: 'Adults', v: adults, s: setAdults }, { l: 'Children', v: children, s: setChildren }, { l: 'Seniors', v: seniors, s: setSeniors }].map(g => (
-                    <div key={g.l} className="text-center p-3 rounded-xl bg-surface-hover">
-                      <p className="text-xs text-muted mb-2">{g.l}</p>
-                      <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => g.s(Math.max(g.l === 'Adults' ? 1 : 0, g.v - 1))} className="h-7 w-7 rounded-full border border-border flex items-center justify-center text-xs hover:bg-primary hover:text-white transition-all">−</button>
-                        <span className="w-6 text-center font-medium">{g.v}</span>
-                        <button onClick={() => g.s(g.v + 1)} className="h-7 w-7 rounded-full border border-border flex items-center justify-center text-xs hover:bg-primary hover:text-white transition-all">+</button>
+              {/* Skeleton Preview */}
+              <div className="mt-12 opacity-30 pointer-events-none">
+                <div className="h-6 w-1/3 bg-surface-hover rounded mx-auto mb-8 animate-pulse" />
+                <div className="space-y-4 max-w-md mx-auto text-left">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="flex gap-4">
+                      <div className="h-10 w-10 bg-surface-hover rounded-full flex-shrink-0 animate-pulse" />
+                      <div className="flex-1 space-y-2 py-1">
+                        <div className="h-4 w-3/4 bg-surface-hover rounded animate-pulse" />
+                        <div className="h-3 w-1/2 bg-surface-hover rounded animate-pulse" />
                       </div>
                     </div>
                   ))}
                 </div>
-                {(children > 0 || seniors > 0) && (
-                  <p className="text-xs text-teal mt-2 flex items-center gap-1"><FiCheck size={12} /> AI will tailor the itinerary for all age groups</p>
-                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* RESULTS STATE */}
+          {state === 'results' && (
+            <motion.div 
+              key="results"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+                <button onClick={handleReset} className="flex items-center gap-2 text-sm font-semibold text-muted hover:text-foreground transition-colors">
+                  <TbChevronLeft size={16} /> Edit Preferences
+                </button>
+                <div className="flex gap-3">
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-surface-hover border border-border text-sm font-semibold transition-colors">
+                    <TbShare size={16} /> Share
+                  </button>
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 text-accent hover:bg-accent hover:text-white border border-accent/20 text-sm font-bold transition-colors">
+                    <TbDownload size={16} /> Save as PDF
+                  </button>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-2 block flex items-center gap-1"><FiStar size={14} /> Interests</label>
-                <div className="flex flex-wrap gap-2">
-                  {INTERESTS.map(i => (
-                    <button key={i} onClick={() => toggleInterest(i)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-all ${
-                        selectedInterests.includes(i) ? 'bg-primary text-white' : 'bg-surface-hover text-muted hover:text-foreground'}`}>
-                      {i}
-                    </button>
+              <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-2xl">
+                <div className="p-8 sm:p-10 bg-gradient-to-br from-primary/10 to-teal/10 border-b border-border">
+                  <div className="inline-flex px-3 py-1 rounded-full bg-background border border-border text-xs font-bold uppercase tracking-wider mb-4 text-accent">
+                    {vibe} • {budget} • {days} Days
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-2">Your AI Itinerary for {destination}</h2>
+                  <p className="text-muted font-medium">Curated specifically based on your unique preferences.</p>
+                </div>
+
+                <div className="p-6 sm:p-10 space-y-12 bg-background">
+                  {MOCK_ITINERARY.map(day => (
+                    <div key={day.day}>
+                      <h3 className="text-xl font-bold flex items-center gap-3 mb-6">
+                        <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-accent text-white text-sm">D{day.day}</span>
+                        {day.title}
+                      </h3>
+                      
+                      <div className="space-y-6 pl-4 sm:pl-11 border-l-2 border-border/50 ml-4 sm:ml-0">
+                        {day.activities.map((act, idx) => (
+                          <div key={idx} className="relative group">
+                            {/* Timeline Dot */}
+                            <div className="absolute -left-[21px] sm:-left-[49px] top-1.5 h-3 w-3 rounded-full bg-border group-hover:bg-accent transition-colors" />
+                            
+                            <div className="bg-surface rounded-2xl border border-border p-5 hover:border-accent/50 hover:shadow-md transition-all">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                                <div>
+                                  <span className="text-xs font-bold text-accent mb-1 block">{act.time}</span>
+                                  <h4 className="font-bold text-lg mb-1">{act.title}</h4>
+                                  <p className="text-muted text-sm">{act.description}</p>
+                                </div>
+                                
+                                {/* AI Reasoning Badge */}
+                                <div className="group/badge relative flex-shrink-0">
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold cursor-help">
+                                    <TbWand size={14} /> AI Pick
+                                  </div>
+                                  
+                                  {/* Tooltip */}
+                                  <div className="absolute right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 bottom-full mb-2 w-64 p-3 rounded-xl bg-foreground text-background text-xs font-medium opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all shadow-xl z-10 pointer-events-none">
+                                    <div className="flex items-start gap-2">
+                                      <TbInfoCircle size={16} className="text-accent flex-shrink-0 mt-0.5" />
+                                      {act.reasoning}
+                                    </div>
+                                    <div className="absolute -bottom-1 right-6 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-3 h-3 bg-foreground rotate-45" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
-
-              <button onClick={generatePlan} disabled={loading || !destination}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary to-teal text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all">
-                {loading ? (
-                  <><div className="h-5 w-5 rounded-full border-2 border-white border-t-transparent animate-spin" /> Generating...</>
-                ) : (
-                  <><FiCpu size={18} /> Generate Itinerary</>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Your AI-Generated Itinerary</h2>
-              <button onClick={() => setPlan(null)} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface-hover transition-all">
-                Create New Plan
-              </button>
-            </div>
-
-            {/* Summary Card */}
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                <div><p className="text-sm text-muted">Destination</p><p className="font-semibold text-primary">{plan.destination}</p></div>
-                <div><p className="text-sm text-muted">Duration</p><p className="font-semibold">{plan.duration} Days</p></div>
-                <div><p className="text-sm text-muted">Group</p><p className="font-semibold">{plan.groupComposition.adults + plan.groupComposition.children + plan.groupComposition.seniors} People</p></div>
-                <div><p className="text-sm text-muted">Est. Cost</p><p className="font-semibold text-primary">₹{Math.round(plan.estimatedCost).toLocaleString()}</p></div>
-              </div>
-            </div>
-
-            {/* Itinerary */}
-            <div className="space-y-4">
-              {plan.itinerary.map(day => (
-                <div key={day.day} className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">{day.day}</div>
-                    {day.day < plan.itinerary.length && <div className="w-0.5 flex-1 bg-border mt-2" />}
-                  </div>
-                  <div className="flex-1 pb-6 rounded-xl border border-border bg-card p-4">
-                    <h4 className="font-semibold">{day.title}</h4>
-                    <p className="text-sm text-muted mt-1">{day.description}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {day.activities.map(a => (
-                        <span key={a} className="px-2 py-0.5 rounded bg-surface-hover text-xs text-muted">{a}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Tips */}
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="font-semibold text-lg mb-4">💡 Travel Tips</h3>
-              <ul className="space-y-2">
-                {plan.tips.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-muted"><FiCheck className="text-teal mt-0.5 flex-shrink-0" /> {tip}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Accommodation */}
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="font-semibold text-lg mb-4">🏨 Accommodation Suggestions</h3>
-              <ul className="space-y-2">
-                {plan.accommodationSuggestions.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-muted"><FiCheck className="text-primary mt-0.5 flex-shrink-0" /> {s}</li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 
@@ -226,7 +227,7 @@ export default function AdminReviewsPage() {
               </div>
               <button className="p-1.5 text-muted hover:text-red-500 rounded-lg hover:bg-red-500/10"><FiTrash2 size={16}/></button>
             </div>
-            <p className="text-sm text-muted italic">"{r.comment}"</p>
+            <p className="text-sm text-muted italic">&quot;{r.comment}&quot;</p>
             <p className="text-[10px] text-muted mt-3 text-right">{new Date(r.createdAt).toLocaleDateString()}</p>
           </div>
         ))}

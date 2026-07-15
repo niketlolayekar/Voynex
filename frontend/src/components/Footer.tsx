@@ -1,8 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FiMail, FiMapPin, FiPhone, FiArrowRight } from 'react-icons/fi';
-import { FaTwitter, FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa';
+import { TbMail, TbMapPin, TbPhone, TbArrowRight } from 'react-icons/tb';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -24,33 +23,35 @@ export default function Footer() {
               <span className="text-xl font-bold gradient-text">VOYNEX</span>
             </div>
             <p className="text-sm text-muted mb-4 leading-relaxed">Your complete travel companion. Discover, plan, and book unforgettable journeys with AI-powered tools.</p>
-            <div className="flex gap-3">
-              {[FaTwitter, FaInstagram, FaFacebook, FaYoutube].map((Icon, i) => (
-                <a key={i} href="#" className="p-2 rounded-lg bg-surface-hover text-muted hover:text-primary hover:bg-primary/10 transition-all">
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Explore */}
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <h4 className="font-semibold mb-4">Explore</h4>
             <div className="flex flex-col gap-2">
-              {[{ href: '/trips', label: 'Explore Trips' }, { href: '/shop', label: 'Travel Shop' }, { href: '/rentals', label: 'Rentals' },
-                { href: '/ai-planner', label: 'AI Trip Planner' }, { href: '/packing-assistant', label: 'Packing Assistant' }].map(link => (
-                <Link key={link.href} href={link.href} className="text-sm text-muted hover:text-primary transition-all">{link.label}</Link>
+              {[
+                { href: '/trips', label: 'Trips' },
+                { href: '/destinations', label: 'Destinations' },
+                { href: '/rentals', label: 'Rentals' },
+                { href: '/shop', label: 'Travel Shop' },
+              ].map(link => (
+                <Link key={link.href} href={link.href} className="text-sm text-muted hover:text-accent transition-all">{link.label}</Link>
               ))}
             </div>
           </div>
 
-          {/* Contact */}
+          {/* Plan & Support */}
           <div>
-            <h4 className="font-semibold mb-4">Contact Us</h4>
-            <div className="flex flex-col gap-3 text-sm text-muted">
-              <div className="flex items-center gap-2"><FiMapPin size={14} className="text-primary" /> Mumbai, India</div>
-              <div className="flex items-center gap-2"><FiPhone size={14} className="text-teal" /> +91 98765 43210</div>
-              <div className="flex items-center gap-2"><FiMail size={14} className="text-orange" /> hello@voynex.com</div>
+            <h4 className="font-semibold mb-4">Plan & Support</h4>
+            <div className="flex flex-col gap-2">
+              {[
+                { href: '/ai-planner', label: 'AI Trip Planner' },
+                { href: '/packing-assistant', label: 'Packing Assistant' },
+                { href: '/explore', label: 'Explore Hub' },
+                { href: '/account', label: 'My Account' },
+              ].map(link => (
+                <Link key={link.href} href={link.href} className="text-sm text-muted hover:text-accent transition-all">{link.label}</Link>
+              ))}
             </div>
           </div>
 
@@ -60,21 +61,27 @@ export default function Footer() {
             <p className="text-sm text-muted mb-4">Get travel inspiration and exclusive deals straight to your inbox.</p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email"
-                className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                className="flex-1 px-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent/50" />
               <button type="submit"
-                className="px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition-all">
-                <FiArrowRight size={16} />
+                className="px-3 py-2.5 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all tap-target">
+                <TbArrowRight size={18} />
               </button>
             </form>
-            {subscribed && <p className="text-xs text-teal mt-2">✓ Subscribed successfully!</p>}
+            {subscribed && <p className="text-xs text-accent mt-2">✓ Subscribed successfully!</p>}
+
+            <div className="mt-6 flex flex-col gap-2 text-sm text-muted">
+              <div className="flex items-center gap-2"><TbMapPin size={16} className="text-accent flex-shrink-0" /> Mumbai, India</div>
+              <div className="flex items-center gap-2"><TbPhone size={16} className="text-accent flex-shrink-0" /> +91 98765 43210</div>
+              <div className="flex items-center gap-2"><TbMail size={16} className="text-accent flex-shrink-0" /> hello@voynex.com</div>
+            </div>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted">
-          <p>© 2026 VOYNEX. All rights reserved.</p>
+          <p>© 2026 VOYNEX. All rights reserved. Built as a B.Tech Capstone Project.</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-foreground transition-all">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-all">Terms of Service</a>
+            <span className="text-muted/50">Privacy Policy</span>
+            <span className="text-muted/50">Terms of Service</span>
           </div>
         </div>
       </div>
